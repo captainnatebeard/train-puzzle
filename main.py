@@ -99,7 +99,7 @@ def main():
         pygame.draw.rect(screen, pygame.Color('red'), clear_rect)
         pygame.draw.rect(screen, pygame.Color('green'), run_rect)
         for i in range(len(instruction_set)):
-            text_surface = base_font.render(instruction_set[i], True, (255, 255, 255))
+            text_surface = base_font.render(str(i) + ': ' + instruction_set[i], True, (255, 255, 255))
             screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5 + (i*22)))
         screen.blit(trackImage, trackLoc)
         screen.blit(stationImage, stationLoc)
