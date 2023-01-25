@@ -15,17 +15,22 @@ trainY = 120
 trackLoc = (80, 100)
 input_rect = pygame.Rect(600, 350, 400, 500)
 run_rect = pygame.Rect(300, 350, 200, 200)
+directions_rect = pygame.Rect(1200, 500, 400, 400)
 clear_rect = pygame.Rect(300, 650, 200, 200)
-reset_rect = pygame.Rect(1200,450,200,200)
 color_active = pygame.Color('lightskyblue2')
 color_passive = pygame.Color('lightskyblue3')
 color = color_passive
 base_font = pygame.font.Font(None, 32)
 train1_start = 650
 train2_start = 1000
+description = "the two trains on the track are running the same codebase, try to get them to collide using only \
+these 4 commands: MVL (move left), MVR (move right), STS (skip instruction if at the station), and JMP \
+(jump to another line in the code).  The box in the middle is for your code.  The green box runs your code.  \
+The red box resets and clears                                                                   Good luck!"
 
 
 def main():
+    pygame.init()
     instruction_set = []
     running = True
     active = False
@@ -95,11 +100,12 @@ def main():
         pygame.draw.rect(screen, pygame.Color('green'), run_rect)
         for i in range(len(instruction_set)):
             text_surface = base_font.render(instruction_set[i], True, (255, 255, 255))
-            screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5 +(i*22)))
+            screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5 + (i*22)))
         screen.blit(trackImage, trackLoc)
         screen.blit(stationImage, stationLoc)
         draw_train(train1_x)
         draw_train(train2_x)
+        draw_text(screen, description, (255,255,255), directions_rect, base_font)
         pygame.display.flip()
         clock.tick(30)
 
@@ -125,6 +131,30 @@ def run_next_instruction(instruction_set, train_x, at_station, pc):
     else:
         at_station = False
     return train_x, at_station, pc
+
+
+def draw_text(surface, text, color, rect, font, aa=False, bkg=None):
+    rect = pygame.Rect(rect)
+    y = rect.top
+    line_spacing = -2
+    font_height = font.size("Tg")[1]
+    while text:
+        i = 1
+        if y + font_height > rect.bottom:
+            break
+        while font.size(text[:i])[0] < rect.width and i < len(text):
+            i += 1
+        if i < len(text):
+            i = text.rfind(" ", 0, i) + 1
+        if bkg:
+            image = font.render(text[:i], 1, color, bkg)
+            image.set_colorkey(bkg)
+        else:
+            image = font.render(text[:i], aa, color)
+        surface.blit(image, (rect.left, y))
+        y += font_height + line_spacing
+        text = text[i:]
+    return text
 
 if __name__ == "__main__":
     main()
