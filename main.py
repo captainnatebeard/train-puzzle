@@ -12,7 +12,7 @@ trackImage = pygame.image.load("tracks_long.png")
 stationImage = pygame.image.load("station-sm.png")
 stationLoc = (820, 60)
 trainY = 120
-trackLoc = (80, 100)
+trackLoc = (-15, 100)
 input_rect = pygame.Rect(600, 350, 400, 500)
 run_rect = pygame.Rect(300, 350, 200, 200)
 directions_rect = pygame.Rect(1200, 500, 400, 400)
@@ -23,9 +23,9 @@ color = color_passive
 base_font = pygame.font.Font(None, 32)
 train1_start = 650
 train2_start = 1000
-description = "the two trains on the track are running the same codebase, try to get them to collide using only \
-these 4 commands: MVL (move left), MVR (move right), STS (skip instruction if at the station), and JMP \
-(jump to another line in the code).  The box in the middle is for your code.  The green box runs your code.  \
+description = "the two trains on the track are running the same codebase, try to get them to collide in as few lines \
+as possible using only these 4 commands: MVL (move left), MVR (move right), STS (skip instruction if at the station), \
+and JMP (jump to another line in the code).  The box in the middle is for your code.  The green box runs your code.  \
 The red box resets and clears                                                                   Good luck!"
 
 
@@ -83,8 +83,6 @@ def main():
             train2_x, at_station2, pc2 = run_next_instruction(instruction_set, train2_x, at_station2, pc2)
         if train1_x > train2_x - 120 or pc1 >= len(instruction_set) or pc2 >= len(instruction_set):
             time.sleep(5)
-            line = 0
-            instruction_set.append('')
             trains_running = False
             train1_x = train1_start
             train2_x = train2_start
@@ -100,7 +98,7 @@ def main():
         pygame.draw.rect(screen, pygame.Color('green'), run_rect)
         for i in range(len(instruction_set)):
             text_surface = base_font.render(str(i) + ': ' + instruction_set[i], True, (255, 255, 255))
-            screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5 + (i*22)))
+            screen.blit(text_surface, (input_rect.x + 5 + (120 * int(i / 22)), input_rect.y + 5 + ((i % 22) * 22)))
         screen.blit(trackImage, trackLoc)
         screen.blit(stationImage, stationLoc)
         draw_train(train1_x)
