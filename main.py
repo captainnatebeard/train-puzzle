@@ -57,7 +57,7 @@ def main():
                         first_click = False
                 else:
                     active = False
-                if run_rect.collidepoint(event.pos):
+                if run_rect.collidepoint(event.pos) and (inst_valid(instruction_set[-1]) or instruction_set[-1] == ''):
                     trains_running = True
                 if clear_rect.collidepoint(event.pos):
                     instruction_set = []
