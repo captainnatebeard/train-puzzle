@@ -41,8 +41,9 @@ def main():
     pc2 = 0
     color_active = pygame.Color('lightskyblue2')
     color_passive = pygame.Color('lightskyblue3')
-    instruction_set.append('')
     trains_running = False
+    #instruction_set.append('') # take this out
+    first_click = True
     # Game Loop
     while running:
         for event in pygame.event.get():
@@ -51,6 +52,9 @@ def main():
             if event.type == 1026:  # mouse button release
                 if input_rect.collidepoint(event.pos):
                     active = True
+                    if first_click:
+                        instruction_set.append('')
+                        first_click = False
                 else:
                     active = False
                 if run_rect.collidepoint(event.pos):
@@ -81,7 +85,8 @@ def main():
         if trains_running:
             train1_x, at_station1, pc1 = run_next_instruction(instruction_set, train1_x, at_station1, pc1)
             train2_x, at_station2, pc2 = run_next_instruction(instruction_set, train2_x, at_station2, pc2)
-        if train1_x > train2_x - 115 or pc1 >= len(instruction_set) or pc2 >= len(instruction_set):
+        if train1_x > train2_x - 115 or ((pc1 >= len(instruction_set) or pc2 >= len(instruction_set)) and
+        not first_click):
             time.sleep(5)
             trains_running = False
             train1_x = train1_start
@@ -107,6 +112,8 @@ def main():
         draw_text(screen, description, (255, 255, 255), directions_rect, base_font)
         draw_text(screen, "RUN", (255, 255, 255), run_text_rect, base_font)
         draw_text(screen, "CLEAR", (255, 255, 255), clear_text_rect, base_font)
+        if first_click:
+            draw_text(screen, "CLICK HERE TO START CODING", (255, 255, 255), input_rect, base_font)
         pygame.display.flip()
         clock.tick(30)
 
