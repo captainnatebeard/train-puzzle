@@ -10,18 +10,18 @@ pygame.display.set_caption("train")
 trainImage = pygame.image.load("toy-train-sm.png")
 trackImage = pygame.image.load("tracks_long.png")
 stationImage = pygame.image.load("station-sm.png")
-stationLoc = (820, 60)
+stationLoc = (850, 60)
 trainY = 120
 trackLoc = (-15, 100)
-input_rect = pygame.Rect(650, 350, 400, 500)
-run_rect = pygame.Rect(300, 350, 200, 200)
-run_text_rect = pygame.Rect(380, 430, 50, 50)
+input_rect = pygame.Rect(680, 350, 400, 500)
+run_rect = pygame.Rect(360, 350, 200, 200)
+run_text_rect = pygame.Rect(440, 430, 50, 50)
 directions_rect = pygame.Rect(1200, 500, 400, 400)
-clear_rect = pygame.Rect(300, 650, 200, 200)
-clear_text_rect = pygame.Rect(370, 730, 100, 100)
+clear_rect = pygame.Rect(360, 650, 200, 200)
+clear_text_rect = pygame.Rect(430, 730, 100, 100)
 base_font = pygame.font.Font(None, 32)
-train1_start = 650
-train2_start = 1000
+train1_start = 670
+train2_start = 1030
 description = "the two trains on the track are running the same codebase, try to get them to collide in as few lines \
 as possible using only these 4 commands: MVL (move left), MVR (move right), STS (skip instruction if at the station), \
 and JMP (jump to another line in the code, ex: 'JMP 3').  The box in the middle is for your code.  The green box runs \
@@ -70,22 +70,21 @@ def main():
                     pc2 = 0
                 click_pos = event.pos
                 print(click_pos)
-            if active and event.type == pygame.KEYDOWN:
+            if active and event.type == pygame.KEYDOWN and not trains_running:
                 if event.key == pygame.K_BACKSPACE:
                     instruction_set[line] = instruction_set[line][:-1]
                 elif event.key == pygame.K_RETURN:
-                    if instruction_set[line][0:3] in instructions and \
-                        ((instruction_set[line][0:3] == 'JMP' and len(instruction_set[line]) > 3
-                            and instruction_set[line][3] == ' ' and instruction_set[line][4:].isnumeric())
-                            or (len(instruction_set[line]) == 3 and instruction_set[line][0:3] != 'JMP')):
+                    if inst_valid(instruction_set[line]):
                         line += 1
                         instruction_set.append('')
                 else:
                     instruction_set[line] += event.unicode.upper()
-        if trains_running:
-            train1_x, at_station1, pc1 = run_next_instruction(instruction_set, train1_x, at_station1, pc1)
-            train2_x, at_station2, pc2 = run_next_instruction(instruction_set, train2_x, at_station2, pc2)
-        if train1_x > train2_x - 115 or ((pc1 >= len(instruction_set) or pc2 >= len(instruction_set)) and
+        if trains_running and (inst_valid(instruction_set[-1]) or instruction_set[-1] == ''):
+            if pc1 < len(instruction_set):
+                train1_x, at_station1, pc1 = run_next_instruction(instruction_set, train1_x, at_station1, pc1)
+            if pc2 < len(instruction_set):
+                train2_x, at_station2, pc2 = run_next_instruction(instruction_set, train2_x, at_station2, pc2)
+        if train1_x > train2_x - 115 or ((pc1 >= len(instruction_set) and pc2 >= len(instruction_set)) and
         not first_click):
             time.sleep(5)
             trains_running = False
@@ -139,6 +138,17 @@ def run_next_instruction(instruction_set, train_x, at_station, pc):
     else:
         at_station = False
     return train_x, at_station, pc
+
+
+def inst_valid(instruction):
+    ret = True
+    if instruction[0:3] not in instructions:
+        ret = False
+    if instruction[0:3] == 'JMP' and (not instruction[4:].isnumeric() or instruction[3] != ' '):
+        ret = False
+    if instruction[0:3] != 'JMP' and len(instruction) > 3:
+        ret = False
+    return ret
 
 
 def draw_text(surface, text, color, rect, font, aa=False, bkg=None):
