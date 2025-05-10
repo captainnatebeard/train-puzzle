@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pygame
 import time
 
@@ -10,6 +12,7 @@ pygame.display.set_caption("train")
 trainImage = pygame.image.load("toy-train-sm.png")
 trackImage = pygame.image.load("tracks_long.png")
 stationImage = pygame.image.load("station-sm.png")
+boomImage = pygame.image.load("boom-sm.png")
 stationLoc = (850, 60)
 trainY = 120
 trackLoc = (-15, 100)
@@ -36,15 +39,15 @@ def main():
     train2_x = train2_start
     at_station1 = False
     at_station2 = False
+    collision = False
     line = 0
     pc1 = 0
     pc2 = 0
     color_active = pygame.Color('lightskyblue2')
     color_passive = pygame.Color('lightskyblue3')
     trains_running = False
-    #instruction_set.append('') # take this out
     first_click = True
-    # Game Loop
+    # main game loop
     while running:
         for event in pygame.event.get():
             if event.type == 256:  # (pygame.QUIT)
@@ -86,8 +89,10 @@ def main():
                 train2_x, at_station2, pc2 = run_next_instruction(instruction_set, train2_x, at_station2, pc2)
         if train1_x > train2_x - 115 or ((pc1 >= len(instruction_set) and pc2 >= len(instruction_set)) and
         not first_click):
-            time.sleep(5)
+            #time.sleep(5)
             trains_running = False
+            draw_boom(train1_x)
+            train_collision = train1_x
             train1_x = train1_start
             train2_x = train2_start
             pc1 = 0
@@ -120,6 +125,11 @@ def main():
 def draw_train(train_x):
     screen.blit(trainImage, (train_x, trainY))
 
+def draw_boom(boom_x):
+    screen.blit(boomImage, (boom_x+30, trainY))
+    pygame.display.flip()
+    print("boom drawn")
+    time.sleep(5)
 
 def run_next_instruction(instruction_set, train_x, at_station, pc):
     instruction = instruction_set[pc]
